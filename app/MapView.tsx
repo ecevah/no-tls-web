@@ -122,8 +122,8 @@ export default function MapView() {
   }, []);
 
   return (
-    <div style={{ position: "relative", flex: 1, minHeight: "100dvh" }}>
-      <div id="map" style={{ position: "absolute", inset: 0 }} />
+    <div style={{ position: "fixed", inset: 0 }}>
+      <div id="map" style={{ position: "absolute", inset: 0, background: "#ddd" }} />
       <div
         style={{
           position: "absolute",
