@@ -36,7 +36,16 @@ export default function MapView() {
   const mapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Map<string, Marker>>(new Map());
   const centeredRef = useRef(false);
-  const [count, setCount] = useState(0);
+  const [positions, setPositions] = useState<Position[]>([]);
+
+  // Pan/zoom the map to a device and open its popup.
+  function focusDevice(imei: string) {
+    const map = mapRef.current;
+    const marker = markersRef.current.get(imei);
+    if (!map || !marker) return;
+    map.setView(marker.getLatLng(), 16, { animate: true });
+    marker.openPopup();
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -93,7 +102,7 @@ export default function MapView() {
               markersRef.current.set(p.imei, m);
             }
           }
-          setCount(data.positions.length);
+          setPositions(data.positions);
 
           // Center on the first device we ever see.
           if (!centeredRef.current && data.positions.length > 0) {
@@ -130,15 +139,60 @@ export default function MapView() {
           top: 8,
           left: 8,
           zIndex: 1000,
-          background: "rgba(255,255,255,.9)",
+          width: 260,
+          maxHeight: "calc(100vh - 16px)",
+          overflowY: "auto",
+          background: "rgba(255,255,255,.95)",
           color: "#111",
-          padding: "4px 10px",
-          borderRadius: 6,
+          borderRadius: 8,
           font: "13px system-ui,sans-serif",
-          boxShadow: "0 1px 4px rgba(0,0,0,.3)",
+          boxShadow: "0 1px 6px rgba(0,0,0,.3)",
         }}
       >
-        {count > 0 ? `${count} cihaz` : "Cihaz bekleniyor…"}
+        <div
+          style={{
+            padding: "8px 12px",
+            fontWeight: 600,
+            borderBottom: "1px solid #eee",
+            position: "sticky",
+            top: 0,
+            background: "rgba(255,255,255,.95)",
+          }}
+        >
+          {positions.length > 0
+            ? `${positions.length} cihaz`
+            : "Cihaz bekleniyor…"}
+        </div>
+        {positions.map((p) => (
+          <button
+            key={p.imei}
+            onClick={() => focusDevice(p.imei)}
+            style={{
+              display: "block",
+              width: "100%",
+              textAlign: "left",
+              padding: "8px 12px",
+              border: "none",
+              borderBottom: "1px solid #f0f0f0",
+              background: "transparent",
+              cursor: "pointer",
+              font: "inherit",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "#f3f4f6")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
+          >
+            <div style={{ fontWeight: 600, fontFamily: "monospace" }}>
+              {p.imei}
+            </div>
+            <div style={{ color: "#555", fontSize: 12 }}>
+              {p.lat.toFixed(5)}, {p.lon.toFixed(5)} · {p.speed} km/h
+            </div>
+          </button>
+        ))}
       </div>
     </div>
   );
