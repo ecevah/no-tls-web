@@ -3,17 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.mjs -p 3111",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node server.mjs",
+    "simulate": "node lib/simulate.mjs",
     "lint": "eslint"
   },
   "dependencies": {
+    "leaflet": "^1.9.4",
     "next": "16.2.10",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.12",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
