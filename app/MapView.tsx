@@ -163,7 +163,9 @@ export default function MapView() {
             ? `${positions.length} cihaz`
             : "Cihaz bekleniyor…"}
         </div>
-        {positions.map((p) => (
+        {[...positions]
+          .sort((a, b) => b.timestamp - a.timestamp)
+          .map((p) => (
           <button
             key={p.imei}
             onClick={() => focusDevice(p.imei)}
