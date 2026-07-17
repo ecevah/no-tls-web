@@ -63,10 +63,12 @@ function startTcpServer(listenPort) {
           buffer = buffer.subarray(parsed.bytesConsumed);
 
           for (const rec of parsed.records) {
-            upsert(imei, rec);
+            const stored = upsert(imei, rec);
             console.log(
               `[tcp] ${imei} @ ${rec.lat.toFixed(6)},${rec.lon.toFixed(6)} ` +
-                `spd=${rec.speed} sat=${rec.satellites}`,
+                `spd=${rec.speed} sat=${rec.satellites} ` +
+                `ts=${new Date(rec.timestamp).toISOString()} ` +
+                (stored ? "-> kaydedildi" : "-> atlandı (daha eski kayit)"),
             );
           }
 
